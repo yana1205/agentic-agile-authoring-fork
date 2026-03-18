@@ -1,5 +1,6 @@
 import argparse
 import io
+import json
 import shutil
 from pathlib import Path
 
@@ -131,6 +132,47 @@ def _remove_skills(skills_dst: Path, scope: str, skills_src: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# MCP helpers
+# ---------------------------------------------------------------------------
+
+def _merge_mcp(roo_dir: Path) -> None:
+    src = DATA_DIR / "mcp.json"
+    if not src.exists():
+        return
+    incoming = json.loads(src.read_text(encoding="utf-8")).get("mcpServers", {})
+    if not incoming:
+        return
+    dst = roo_dir / "mcp.json"
+    existing = json.loads(dst.read_text(encoding="utf-8")) if dst.exists() else {}
+    existing.setdefault("mcpServers", {}).update(incoming)
+    dst.write_text(json.dumps(existing, indent="\t"), encoding="utf-8")
+    print(f"✓ .roo/mcp.json updated — added: {', '.join(incoming)}")
+
+
+def _remove_mcp(roo_dir: Path) -> None:
+    src = DATA_DIR / "mcp.json"
+    if not src.exists():
+        return
+    keys = set(json.loads(src.read_text(encoding="utf-8")).get("mcpServers", {}))
+    if not keys:
+        return
+    dst = roo_dir / "mcp.json"
+    if not dst.exists():
+        return
+    data = json.loads(dst.read_text(encoding="utf-8"))
+    servers = data.get("mcpServers", {})
+    removed = [k for k in keys if k in servers]
+    for k in removed:
+        del servers[k]
+    if not servers:
+        dst.unlink()
+        print("✓ .roo/mcp.json removed (empty)")
+    else:
+        dst.write_text(json.dumps(data, indent="\t"), encoding="utf-8")
+        print(f"✓ .roo/mcp.json updated — removed: {', '.join(removed)}")
+
+
+# ---------------------------------------------------------------------------
 # Commands
 # ---------------------------------------------------------------------------
 
@@ -164,6 +206,9 @@ def install(cwd: Path, skills_scope: str) -> None:
         shutil.copytree(src, dst)
         print(f"✓ .roo/rules-{slug}/ written ({len(list(dst.iterdir()))} files)")
 
+    # 4. Merge MCP servers into .roo/mcp.json
+    _merge_mcp(roo_dir)
+
     print(f"\n{PACKAGE_NAME} installed successfully.")
 
 
@@ -192,6 +237,9 @@ def uninstall(cwd: Path, skills_scope: str) -> None:
         if rules_dir.exists():
             shutil.rmtree(rules_dir)
             print(f"✓ .roo/rules-{slug}/ removed")
+
+    # 4. Remove MCP servers from .roo/mcp.json
+    _remove_mcp(roo_dir)
 
     print(f"\n{PACKAGE_NAME} uninstalled successfully.")
 

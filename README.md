@@ -26,7 +26,9 @@ mkdir my-compliance-workspace && cd my-compliance-workspace
 uvx --from git+https://github.com/oscal-compass/agentic-agile-authoring.git agentic-agile-authoring install
 ```
 
-Then switch to the **📑 Agentic Agile Authoring** mode in Roo Code.
+Then reload your workspace and switch to the **📑 Agentic Agile Authoring** mode in Roo Code.
+
+> **Note:** Roo Code loads skills at startup. If you install after opening the workspace, reload it for the skills to take effect.
 
 **Claude Code:**
 
@@ -41,30 +43,38 @@ Confirm that the skills are loaded and the [trestle MCP server](https://github.c
 
 ### 4. Try compliance authoring
 
-Follow along with the demo above using these prompts:
+Follow along with the demo above. Type each prompt into Roo Code chat:
 
 **Step 1 — Create a custom catalog**
 
-> Create regulatory controls for our organization, based on NIST SP 800-53 and limited to access control.
-
+Type in Roo Code:
+```
+Create regulatory controls for our organization, based on NIST SP 800-53 and limited to access control.
+```
 The agent prepares your regulatory document. Once done, it will ask if you want to customize the wording.
 
 **Step 2 — Generate OSCAL catalog**
 
-> For now, proceed with the default wording. Please create the OSCAL JSON for this custom catalog.
-
+Type in Roo Code:
+```
+For now, proceed with the default wording. Please create the OSCAL JSON for this custom catalog.
+```
 `catalog.json` is created. Your controls are ready.
 
 **Step 3 — Define a component (Kubernetes)**
 
-> Apply our organization's regulatory controls (catalogs/ac_controls_catalog) to Kubernetes. At this stage, please create the component definition.
-
+Type in Roo Code:
+```
+Apply our organization's regulatory controls (catalogs/ac_controls_catalog) to Kubernetes. At this stage, please create the component definition.
+```
 The agent generates a human-readable implementation guide (Markdown + spreadsheet) per control, then produces the OSCAL `component-definition.json`. We recommend installing the [Rainbow CSV](https://marketplace.visualstudio.com/items?itemName=mechatroner.rainbow-csv) VS Code extension to review the spreadsheet output.
 
 **Step 4 — Generate assessment results**
 
-> Using the component definition, create the assessment results.
-
+Type in Roo Code:
+```
+Using the component definition, create the assessment results.
+```
 Provide your security tool's scan output, and the agent generates an assessment posture. If no scan output is provided, a mock posture is created automatically.
 
 ---
