@@ -344,6 +344,16 @@ _REMEDIATION_PROPS = {
     # (auto POAM-001…, or from a --remediations file), never carried on the component-definition.
 }
 
+# Where each consolidated prop lands, keyed by WHEN it can be defined (review #12):
+#   1) SOFTWARE (service) component — knowable when the software/rule is defined: the weakness/risk
+#      (+ its owner). Joined onto the service component by rule-id.
+_SOFTWARE_PROPS = {"Weakness_Name", "Weakness_Description", "Risk_Rating", "Severity", "POC"}
+#   3) remediation TRACKING — only settled during/after assessment (when/who executes the fix). These
+#      live on the top-level risk (deadline / remediation tasks), NOT on a pre-defined component.
+_TRACKING_PROPS = {"Scheduled_Completion_Date", "Milestone", "Phase"}
+#   2) everything else — i.e. Remediation_Plan, the per-check remediation GUIDE the validation tool
+#      defines up front — stays on the validation component.
+
 
 def _remediation_from_slot(slot: dict) -> dict:
     """Pull consolidated remediation/risk out of one rule-set's props (path C, single-source).
@@ -645,26 +655,53 @@ def parse_component_definition(cd_doc: dict) -> tuple[list[dict], dict]:
 def _local_definitions(components: dict, system_id: str | None,
                        remediations: dict | None = None) -> LocalDefinitions:
     remediations = remediations or {}
+    # The consolidated static content is authored on the validation rule-set (pair["static"])
+    # and/or the --remediations file, but the SOFTWARE subset (weakness/risk + owner) semantically
+    # belongs to the software component (review #12). Index that subset per rule-id so the service
+    # component sharing the rule-id can carry it. (The validation component keeps only the
+    # remediation guide; tracking props go on the risk, not on any component.)
+    software_by_rid: dict[str, list[tuple[str, str]]] = {}
+    for meta in components.values():
+        if meta.get("type") != "validation":
+            continue
+        for pair in meta.get("rules") or []:
+            rid = pair.get("rule_id")
+            if not rid or rid in software_by_rid:
+                continue
+            sw = [(n, v) for n, v in _merged_static_props(pair, remediations)
+                  if n in _SOFTWARE_PROPS]
+            if sw:
+                software_by_rid[rid] = sw
+
     sys_components: list[SystemComponent] = []
     inv_items: list[InventoryItem] = []
     platforms: list[AssessmentPlatform] = []
     for title, meta in components.items():
         cuuid = _u5("comp", title)
+        is_validation = meta["type"] == "validation"
         # Carry the rule-id / check-id this component declares (from the component-definition),
-        # each stamped with its verbatim rule-set `remarks` token. On a validation component this is
-        # the CONSOLIDATED HOME for the static weakness/risk/remediation content — merged from the CD
-        # rule-set props AND any --remediations file entry (file wins per field), carried under the
-        # same token (verbatim CD prop names, no ns). This is the single place the static content
-        # lives; poam-items reference it by `rule-id` instead of duplicating it.
+        # each stamped with its verbatim rule-set `remarks` token. The consolidated static content
+        # is SPLIT by when it is knowable (review #12): the validation component keeps only the
+        # remediation GUIDE (Remediation_Plan); the software component gets the WEAKNESS/RISK subset
+        # (+ owner), joined by rule-id; TRACKING props (schedule/milestones/phase) go on the risk,
+        # not on any component. Either way poam-items reference the group by `rule-id`.
         cprops: list[Property] = []
         for pair in meta.get("rules") or []:
             tok = pair.get("remarks")
-            if pair.get("rule_id"):
-                cprops.append(_prop("rule-id", str(pair["rule_id"]), remarks=tok))
+            rid = pair.get("rule_id")
+            if rid:
+                cprops.append(_prop("rule-id", str(rid), remarks=tok))
             if pair.get("check_id"):
                 cprops.append(_prop("check-id", str(pair["check_id"]), remarks=tok))
-            if meta["type"] == "validation":
+            if is_validation:  # remediation GUIDE only (software + tracking excluded)
                 for name, val in _merged_static_props(pair, remediations):
+                    if name in _SOFTWARE_PROPS or name in _TRACKING_PROPS:
+                        continue
+                    v = str(val).strip()
+                    if v:
+                        cprops.append(_prop(name, v, ns=None, remarks=tok))
+            else:              # software (service): weakness/risk-side props, joined by rule-id
+                for name, val in software_by_rid.get(rid) or []:
                     v = str(val).strip()
                     if v:
                         cprops.append(_prop(name, v, ns=None, remarks=tok))
@@ -748,6 +785,9 @@ def _predefined_item(rule: dict, check: dict | None, index: int, remediations: d
             target = ms.get("target_date")
             props.append(_prop("milestone", f"{d} (target: {target})" if target else d))
         item_remarks = rem.get("remediation_plan") or None
+    # the software (service) component the weakness/risk belongs to is reached from `rule-id` (it
+    # carries the same `rule-id` prop in local-definitions, type=service), so it is not duplicated
+    # as an item prop (review #12).
     for vc in rule.get("validation_components") or []:
         props.append(_prop("validation-component", str(vc)))
 

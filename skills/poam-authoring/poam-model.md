@@ -91,22 +91,25 @@ Input is a trestle-style `component-definition.json`. The builder joins every co
   status `operational`), each carrying the **`rule-id` / `check-id` props** it declares, **grouped by
   the component-definition's verbatim `remarks` rule-set token** (e.g. `rule_set_09`) — the props of
   one rule-set share one `remarks` value, mirroring the CD. **This is the consolidated home for the
-  static content**: on a **validation** component, each rule-set also carries its
-  `Weakness_Name`/`Weakness_Description`/`Risk_Rating`/`POC`/`Scheduled_Completion_Date`/
-  `Remediation_Plan`/`Milestone` props **verbatim from the CD** (no `ns`, so they mirror the CD
-  exactly), under the same token. (These land here only when the CD carries them — the `remarks`
-  token is unique *within one component*, and the consolidated props live only on the validation
-  rule-sets, so the validation token is the home.)
+  static content**, **split by when it is knowable** (review #12): the **software** (service)
+  component carries the weakness/risk props — `Weakness_Name`/`Weakness_Description`/`Risk_Rating`/
+  `Severity`/`POC` — and the **validation** component carries only the per-check remediation guide,
+  `Remediation_Plan` — each **verbatim from the CD** (no `ns`), under that component's token. The
+  remediation **tracking** (`Scheduled_Completion_Date`/`Milestone`/`Phase`) is not a component prop:
+  it lives on the top-level risk (`deadline` / remediation `tasks`). (These land here only when the
+  CD/`--remediations` supply them.)
 - `local-definitions.inventory-items` — one per service component (with an `implemented-component`
   back-reference).
 - `local-definitions.assessment-assets.assessment-platforms` — one per validation component.
 - `poam-items` — one per rule/check, anchored by a **`check-id`** prop (the phase-2 link key) plus
-  `control-id`(s), `validation-component`(s), and a **`rule-id`** prop (the rule's `Rule_Id`),
-  relating the item back to its consolidated local-definitions group.
+  `control-id`(s), `validation-component`(s) (the tool that tests it), and a **`rule-id`** prop (the
+  rule's `Rule_Id`), relating the item back to its consolidated local-definitions group — where the
+  weakness/risk content sits on the software (service) component (reached by `rule-id`).
   `uuid` is `uuid5` of the check-id (stable so phase 2 can find it). No observations/findings yet.
 - `risks` — one top-level OSCAL `risk` per item (OSCAL forbids risks *inside* `local-definitions`, so
-  the risk object stays top-level). It carries the same **`rule-id`** join prop and holds the
-  remediation (`remediations[]`). Its `description`/`statement` are OSCAL-required.
+  the risk object stays top-level). It carries the same **`rule-id`** join prop (the software
+  component the risk belongs to is reached from it) and holds the remediation (`remediations[]`).
+  Its `description`/`statement` are OSCAL-required.
 
 **No duplication (the goal).** The static weakness/risk/remediation content lives in **one place** —
 the local-definitions rule-set group (+ the top-level `risk`). A poam-item does **not** repeat it:

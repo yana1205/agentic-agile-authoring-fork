@@ -3,7 +3,7 @@
     "uuid": "d6d55f61-cf40-5ec1-a7d6-0be4d3c8798d",
     "metadata": {
       "title": "Kubernetes Cluster POA&M",
-      "last-modified": "2026-09-01T02:31:52.774+00:00",
+      "last-modified": "2026-09-07T11:52:12.765+00:00",
       "version": "1.0",
       "oscal-version": "1.2.1"
     },
@@ -31,6 +31,21 @@
               "remarks": "rule_set_00"
             },
             {
+              "name": "POC",
+              "value": "DevOps Team",
+              "remarks": "rule_set_00"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "GitHub API version may be unsupported",
+              "remarks": "rule_set_00"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "The GitHub API might not return a supported version (CM-2).",
+              "remarks": "rule_set_00"
+            },
+            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "demo_examples.checks.test_github.GitHubOrgs.test_members_is_not_empty",
@@ -40,6 +55,21 @@
               "name": "check-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "demo_examples.checks.test_github.GitHubOrgs.test_members_is_not_empty",
+              "remarks": "rule_set_01"
+            },
+            {
+              "name": "POC",
+              "value": "DevOps Team",
+              "remarks": "rule_set_01"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "GitHub organization may be empty",
+              "remarks": "rule_set_01"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "The GitHub org might have no members (AC-2, Account Management).",
               "remarks": "rule_set_01"
             }
           ],
@@ -66,6 +96,26 @@
               "remarks": "rule_set_02"
             },
             {
+              "name": "Risk_Rating",
+              "value": "High",
+              "remarks": "rule_set_02"
+            },
+            {
+              "name": "POC",
+              "value": "Platform Security Team",
+              "remarks": "rule_set_02"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "Base image not restricted to an approved allow list",
+              "remarks": "rule_set_02"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "Containers may run base images outside the cluster-wide approved allow list, weakening supply-chain assurance for CM-2 (Baseline Configuration).",
+              "remarks": "rule_set_02"
+            },
+            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "disallow-capabilities",
@@ -75,6 +125,26 @@
               "name": "check-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "disallow-capabilities",
+              "remarks": "rule_set_03"
+            },
+            {
+              "name": "Risk_Rating",
+              "value": "Moderate",
+              "remarks": "rule_set_03"
+            },
+            {
+              "name": "POC",
+              "value": "Platform Security Team",
+              "remarks": "rule_set_03"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "Added Linux capabilities not disallowed",
+              "remarks": "rule_set_03"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "Containers could add Linux capabilities beyond the policy allow list (CM-2.1).",
               "remarks": "rule_set_03"
             },
             {
@@ -87,6 +157,21 @@
               "name": "check-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "policy-deployment",
+              "remarks": "rule_set_04"
+            },
+            {
+              "name": "POC",
+              "value": "Platform Team",
+              "remarks": "rule_set_04"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "Deployment minimum-replica policy not guaranteed",
+              "remarks": "rule_set_04"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "NGINX deployment could fall below the configured minimum replica count (CM-2).",
               "remarks": "rule_set_04"
             },
             {
@@ -99,6 +184,26 @@
               "name": "check-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "policy-disallowed-roles",
+              "remarks": "rule_set_05"
+            },
+            {
+              "name": "Risk_Rating",
+              "value": "Moderate",
+              "remarks": "rule_set_05"
+            },
+            {
+              "name": "POC",
+              "value": "Platform Team",
+              "remarks": "rule_set_05"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "Disallowed cluster roles in use",
+              "remarks": "rule_set_05"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "RoleBindings grant roles outside the allowed set, violating AC-1 (Policy and Procedures) least-privilege expectations.",
               "remarks": "rule_set_05"
             },
             {
@@ -111,6 +216,26 @@
               "name": "check-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "policy-high-scan",
+              "remarks": "rule_set_06"
+            },
+            {
+              "name": "Risk_Rating",
+              "value": "High",
+              "remarks": "rule_set_06"
+            },
+            {
+              "name": "POC",
+              "value": "Platform Team",
+              "remarks": "rule_set_06"
+            },
+            {
+              "name": "Weakness_Name",
+              "value": "High-level vulnerability scan not enabled",
+              "remarks": "rule_set_06"
+            },
+            {
+              "name": "Weakness_Description",
+              "value": "The cluster scan profile does not run at the high level required by policy for CM-6 (Configuration Settings).",
               "remarks": "rule_set_06"
             }
           ],
@@ -142,21 +267,6 @@
               "remarks": "rule_set_07"
             },
             {
-              "name": "POC",
-              "value": "DevOps Team",
-              "remarks": "rule_set_07"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "GitHub API version may be unsupported",
-              "remarks": "rule_set_07"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "The GitHub API might not return a supported version (CM-2).",
-              "remarks": "rule_set_07"
-            },
-            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "demo_examples.checks.test_github.GitHubOrgs.test_members_is_not_empty",
@@ -171,21 +281,6 @@
             {
               "name": "Remediation_Plan",
               "value": "Alert via Auditree if the GitHub org membership drops to zero.",
-              "remarks": "rule_set_08"
-            },
-            {
-              "name": "POC",
-              "value": "DevOps Team",
-              "remarks": "rule_set_08"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "GitHub organization may be empty",
-              "remarks": "rule_set_08"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "The GitHub org might have no members (AC-2, Account Management).",
               "remarks": "rule_set_08"
             }
           ],
@@ -217,41 +312,6 @@
               "remarks": "rule_set_09"
             },
             {
-              "name": "Risk_Rating",
-              "value": "High",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "POC",
-              "value": "Platform Security Team",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "Scheduled_Completion_Date",
-              "value": "2026-12-31",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "Base image not restricted to an approved allow list",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "Containers may run base images outside the cluster-wide approved allow list, weakening supply-chain assurance for CM-2 (Baseline Configuration).",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "Milestone",
-              "value": "2026-10-01: Publish approved base-image allow list",
-              "remarks": "rule_set_09"
-            },
-            {
-              "name": "Milestone",
-              "value": "2026-11-15: Enforce Kyverno allowed-base-images policy in audit->enforce",
-              "remarks": "rule_set_09"
-            },
-            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "disallow-capabilities",
@@ -266,26 +326,6 @@
             {
               "name": "Remediation_Plan",
               "value": "Enforce the Kyverno disallow-capabilities policy across all namespaces.",
-              "remarks": "rule_set_10"
-            },
-            {
-              "name": "Risk_Rating",
-              "value": "Moderate",
-              "remarks": "rule_set_10"
-            },
-            {
-              "name": "POC",
-              "value": "Platform Security Team",
-              "remarks": "rule_set_10"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "Added Linux capabilities not disallowed",
-              "remarks": "rule_set_10"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "Containers could add Linux capabilities beyond the policy allow list (CM-2.1).",
               "remarks": "rule_set_10"
             }
           ],
@@ -317,21 +357,6 @@
               "remarks": "rule_set_11"
             },
             {
-              "name": "POC",
-              "value": "Platform Team",
-              "remarks": "rule_set_11"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "Deployment minimum-replica policy not guaranteed",
-              "remarks": "rule_set_11"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "NGINX deployment could fall below the configured minimum replica count (CM-2).",
-              "remarks": "rule_set_11"
-            },
-            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "policy-disallowed-roles",
@@ -349,36 +374,6 @@
               "remarks": "rule_set_12"
             },
             {
-              "name": "Risk_Rating",
-              "value": "Moderate",
-              "remarks": "rule_set_12"
-            },
-            {
-              "name": "POC",
-              "value": "Platform Team",
-              "remarks": "rule_set_12"
-            },
-            {
-              "name": "Scheduled_Completion_Date",
-              "value": "2026-12-15",
-              "remarks": "rule_set_12"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "Disallowed cluster roles in use",
-              "remarks": "rule_set_12"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "RoleBindings grant roles outside the allowed set, violating AC-1 (Policy and Procedures) least-privilege expectations.",
-              "remarks": "rule_set_12"
-            },
-            {
-              "name": "Milestone",
-              "value": "2026-11-01: Remediate disallowed RoleBindings",
-              "remarks": "rule_set_12"
-            },
-            {
               "name": "rule-id",
               "ns": "https://oscal-compass.github.io/compliance-authoring-skills/ns/poam",
               "value": "policy-high-scan",
@@ -393,36 +388,6 @@
             {
               "name": "Remediation_Plan",
               "value": "Set the scan profile to high and schedule recurring high-level scans; wire results into the compliance pipeline.",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "Risk_Rating",
-              "value": "High",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "POC",
-              "value": "Platform Team",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "Scheduled_Completion_Date",
-              "value": "2026-11-30",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "Weakness_Name",
-              "value": "High-level vulnerability scan not enabled",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "Weakness_Description",
-              "value": "The cluster scan profile does not run at the high level required by policy for CM-6 (Configuration Settings).",
-              "remarks": "rule_set_13"
-            },
-            {
-              "name": "Milestone",
-              "value": "2026-10-15: Enable high-level scan profile",
               "remarks": "rule_set_13"
             }
           ],

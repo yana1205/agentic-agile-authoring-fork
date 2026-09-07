@@ -40,9 +40,11 @@ Ask the user for the path if it is not obvious. (A `.csv` sibling is the authori
   `Check_Id`) per check, and the tool keeps **every** check.
 
 So each rule/check becomes one pre-defined weakness anchored by **`check-id`** (the stable link key
-used in phase 2) plus its **`control-id`(s)** and the **`validation-component`(s)** that test it.
-A rule with N checks therefore yields N poam-items — one per check — all sharing that rule's
-controls and validation components.
+used in phase 2), its **`control-id`(s)**, and the **`validation-component`(s)** that test it. Its
+weakness/risk content lives on the **software** (service) component in `local-definitions`, reached
+from the item's **`rule-id`** (that component carries the same `rule-id`, `type=service`) — so the
+software component is not duplicated as an item prop. A rule with N checks therefore yields N
+poam-items — one per check — all sharing that rule's controls and components.
 
 Example (from the demo component-definition): `allowed-base-images` → control `cm-2`, checked by
 `Kyverno`; `policy-high-scan` → `cm-6` / `OCM`; `test_members_is_not_empty` → `ac-2` / `Auditree`.
@@ -88,14 +90,16 @@ component-definition itself** — as extra props on each **validation** rule-set
 matched by its `remarks`, that already holds `Rule_Id` / `Check_Id`). Then the component-definition
 is the *single source* for pre-defining the POA&M and no `--remediations` file is needed:
 
-| Prop name (on the validation rule-set) | Becomes, in the POA&M |
-|---|---|
-| `Remediation_Plan` | the local-def group's `Remediation_Plan` prop + the risk's `remediations[]` response |
-| `Risk_Rating` | the local-def group's `Risk_Rating` prop + the risk's rating (`original-risk-rating` / facets) |
-| `POC` | the local-def group's `POC` prop |
-| `Scheduled_Completion_Date` | the local-def group's `Scheduled_Completion_Date` prop + the risk `deadline` |
-| `Weakness_Name` / `Weakness_Description` | the item `title` / `description` (and the group's props) |
-| `Milestone` (repeatable) | the local-def group's `Milestone` prop(s) + the risk remediation's `tasks[]`; value `"<target_date>: <description>"` |
+| Prop name (on the validation rule-set) | Lands on (review #12) | Becomes, in the POA&M |
+|---|---|---|
+| `Weakness_Name` / `Weakness_Description` | software | the item `title` / `description` (and the software component's props) |
+| `Risk_Rating` | software | the **software** component's `Risk_Rating` prop + the risk's rating (`original-risk-rating` / facets) |
+| `Severity` | software | the **software** component's `Severity` prop |
+| `POC` | software | the **software** component's `POC` prop |
+| `Remediation_Plan` | validation | the **validation** component's `Remediation_Plan` prop (the guide) + the risk's `remediations[]` response |
+| `Scheduled_Completion_Date` | risk (tracking) | the risk `deadline` |
+| `Milestone` (repeatable) | risk (tracking) | the risk remediation's `tasks[]`; value `"<target_date>: <description>"` |
+| `Phase` | risk (tracking) | recorded with the remediation tracking (not a pre-defined component prop) |
 
 All of these land in **one place** — the check's rule-set group in `local-definitions` (plus the
 top-level risk) — **not** duplicated onto the poam-item; the item just references the group by
@@ -114,12 +118,21 @@ props consolidated and passes **no** `--remediations` — see [the demo](../../d
 
 The static content is **consolidated into the POA&M's `local-definitions`, keyed per check and
 grouped by the component-definition's verbatim `remarks` rule-set token** — and it lives there
-**once**, not copied onto every poam-item. For each **validation** component, the rule-set's
-`Weakness_Name`/`Weakness_Description`/`Risk_Rating`/`POC`/`Scheduled_Completion_Date`/
-`Remediation_Plan`/`Milestone` props are carried onto that component in `local-definitions`
-**verbatim** (same names, same values, no `ns`), all sharing the same `remarks` value (e.g.
-`rule_set_09`) alongside the `rule-id`/`check-id`. So the POA&M's local-definitions mirror the CD's
-rule-set structure exactly.
+**once**, not copied onto every poam-item. It is **split by nature** across the two components the
+rule joins (per review #12 — a weakness/risk is a property of the assessed software, while
+remediation is authored by the validating tool):
+
+- the **software** (service) component carries the **weakness/risk** props, knowable when the
+  software/rule is defined — `Weakness_Name`/`Weakness_Description`/`Risk_Rating`/`Severity`/`POC`;
+- the **validation** component carries only the per-check **remediation guide** — `Remediation_Plan`
+  (what the tool knows up front about fixing a failure of this check);
+- **remediation tracking** — `Scheduled_Completion_Date`/`Milestone`/`Phase` — is only settled
+  during/after assessment (when/who executes the fix), so it lives on the top-level **risk**
+  (`deadline` / remediation `tasks`), not on a pre-defined component.
+
+The component props are carried **verbatim** (same names, same values, no `ns`), each alongside its
+component's `rule-id`/`check-id` under that component's `remarks` value (e.g. `rule_set_09`). So the
+POA&M's local-definitions mirror the CD's rule-set structure exactly.
 
 **Both sources feed the group.** The content is merged from (a) the CD rule-set's own props and
 (b) a `--remediations` file entry for that check/rule (file wins per field). So **even when the
@@ -135,8 +148,9 @@ references the group; it does **not** repeat the `risk-rating`/`point-of-contact
 risks *inside* `local-definitions`) also carries the `rule-id` join and holds the remediation. A
 reader traces `poam-item → rule-id → local-definitions group` (and → the risk) to recover everything.
 
-> Only the **validation** component's token is used (the same rule has a *different* `remarks` token
-> on the service component, and the consolidated props live only on the validation rule-sets).
+> The weakness/risk props sit on the **software** component and the remediation guide on the
+> **validation** component (tracking lives on the risk); the same rule has a *different* `remarks`
+> token on each component, but both join back to the same rule via `rule-id`.
 >
 > **Fallback:** a rule with no validation rule-set has no group to reference, so its item inlines the
 > descriptive props itself — nothing is lost.
